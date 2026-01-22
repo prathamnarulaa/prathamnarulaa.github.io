@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portfolio of Pratham Narula - 3D Motion Designer & Visual Artist.">
+    <title>Pratham Narula - Portfolio</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+
+        body {
+            font-family: 'Poppins', sans-serif; background: #0a0a0a;
+            color: #fff; overflow-x: hidden; position: relative;
+            opacity: 0; transition: opacity 0.5s ease;
+        }
+        body.loaded { opacity: 1; }
+
+        /* --- PRELOADER --- */
+        .preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 99999; display: flex;
+            justify-content: center; align-items: center;
+        }
+        .counter { font-size: 8rem; font-weight: 900; color: #fff; }
+        
+        .progress-bar {
+            position: fixed; top: 0; left: 0; height: 4px;
+            background: linear-gradient(to right, #a855f7, #ec4899);
+            width: 0%; z-index: 100000;
+        }
+
+        /* --- BACKGROUND GRID (Kept for texture) --- */
+        .bg-grid {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 100px 100px;
+            z-index: -3; pointer-events: none;
+        }
+
+        /* --- INTERACTIVE ORB --- */
+        .interactive-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(59, 130, 246, 0.10) 30%, transparent 70%);
+            border-radius: 50%; pointer-events: none; z-index: -2; filter: blur(80px);
+            transform: translate(-50%, -50%); will-change: transform;
+        }
+        .cursor-dot, .cursor-outline { 
+            position: fixed; top: 0; left: 0; transform: translate(-50%, -50%); 
+            border-radius: 50%; z-index: 2147483647; pointer-events: none; 
+        }
+        .cursor-dot { width: 8px; height: 8px; background-color: #fff; }
+        .cursor-outline { width: 40px; height: 40px; border: 1px solid rgba(255, 255, 255, 0.5); }
+
+        /* --- MARQUEE --- */
+        .marquee-container {
+            position: fixed; top: 50%; left: 0; transform: translateY(-50%) rotate(-5deg);
+            width: 100vw; overflow: hidden; z-index: -1; pointer-events: none;
+            opacity: 0.03; mix-blend-mode: overlay;
+        }
+        .marquee-content { display: flex; white-space: nowrap; animation: scrollText 60s linear infinite; }
+        .marquee-text {
+            font-size: 15vw; font-weight: 900; color: transparent; text-transform: uppercase;
+            padding-right: 50px; -webkit-text-stroke: 2px rgba(255,255,255,0.5);
+        }
+        @keyframes scrollText { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        /* --- UI ELEMENTS --- */
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem; position: relative; z-index: 1; }
+
+        header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; margin-bottom: 4rem; }
+        .logo { font-size: 1.5rem; font-weight: 700; background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer; }
+        nav { display: flex; gap: 2rem; }
+        nav a { color: #888; text-decoration: none; font-weight: 500; transition: all 0.3s ease; }
+        nav a:hover { color: #a855f7; text-shadow: 0 0 20px rgba(168, 85, 247, 0.5); }
+
+        .hero { text-align: center; height: 80vh; display: flex; flex-direction: column; justify-content: center; }
+        .hero-title { font-size: 4.5rem; font-weight: 700; line-height: 1.2; margin-bottom: 1.5rem; background: linear-gradient(135deg, #fff 0%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .typing-text { color: #a855f7; border-right: 2px solid #a855f7; }
+        .reveal-text { opacity: 0; transform: translateY(30px); }
+
+        .section-title {
+            font-size: 4rem; font-weight: 800; text-align: center; margin-top: 5vh; margin-bottom: 5vh;
+            background: linear-gradient(135deg, #fff 0%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        /* --- HORIZONTAL SCROLL --- */
+        .horizontal-section { width: 100%; height: 100vh; display: flex; align-items: center; overflow: hidden; }
+        .reels-track { display: flex; gap: 5vw; padding-left: 5vw; padding-right: 10vw; width: max-content; align-items: center; }
+        
+        .reel-card { 
+            height: 60vh; width: auto; flex-shrink: 0; position: relative; 
+            display: flex; flex-direction: column; align-items: center; 
+        }
+        
+        .phone-container { 
+            height: 100%; width: auto; aspect-ratio: auto; 
+            border-radius: 20px; background: #000; 
+            position: relative; overflow: visible; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+        }
+        .phone-container.aspect-square { aspect-ratio: 1 / 1; }
+
+        .glow-under { position: absolute; top: 10%; left: 10%; width: 80%; height: 80%; background: rgba(168, 85, 247, 0.4); filter: blur(50px); z-index: -1; opacity: 0.5; transition: opacity 0.3s ease; }
+        .reel-card:hover .glow-under { opacity: 1; background: rgba(168, 85, 247, 0.8); }
+
+        /* --- RESTORED DYNAMIC GLOW (Mirror Effect) --- */
+        .glow-layer {
+            position: absolute; 
+            top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
+            width: 100%; height: 100%; 
+            z-index: -1; 
+            filter: blur(50px) brightness(1.2) saturate(1.5);
+            opacity: 0.6; transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        .reel-card:hover .glow-layer { opacity: 1; }
+
+        .glow-image {
+            width: 100%; height: 100%; object-fit: cover;
+            position: absolute; top: 0; left: 0; border-radius: 20px;
+            opacity: 0; transition: opacity 0.5s ease;
+        }
+        .glow-image.active { opacity: 1; }
+
+        /* --- MEDIA --- */
+        .video-wrapper { position: relative; width: auto; height: 100%; border-radius: 20px; overflow: hidden; z-index: 2; background: #111; }
+        .video-player, .photo-player { height: 100%; width: auto; object-fit: cover; display: block; }
+        .photo-player.slide { position: absolute; top: 0; left: 0; width: 100%; opacity: 0; transition: opacity 0.5s ease; }
+        .photo-player.active { opacity: 1; position: relative; } 
+        .card-title { margin-top: 1.5rem; font-size: 1.5rem; font-weight: 600; color: #fff; }
+
+        .sound-btn { position: absolute; bottom: 20px; right: 20px; width: 45px; height: 45px; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px); border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); z-index: 10; display: flex; justify-content: center; align-items: center; cursor: pointer; pointer-events: all; transition: transform 0.2s ease; }
+        .sound-btn:hover { transform: scale(1.1); background: #fff; }
+        .sound-btn:hover svg { fill: #000; }
+        .sound-btn svg { width: 20px; height: 20px; fill: #fff; transition: fill 0.2s; }
+
+        /* --- FOOTER --- */
+        .footer-cta { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .cta-text { font-size: 5vw; font-weight: 800; cursor: pointer; color: #fff; transition: all 0.3s ease; margin-bottom: 2rem; }
+        .cta-text:hover { color: #a855f7; text-shadow: 0 0 40px rgba(168, 85, 247, 0.8); }
+        .footer-socials { display: flex; gap: 2rem; margin-bottom: 2rem; z-index: 10; }
+        .footer-socials a { color: #888; text-decoration: none; font-size: 1.2rem; transition: color 0.3s; font-weight: 500; }
+        .footer-socials a:hover { color: #fff; }
+        .footer-credits { color: #444; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; }
+    </style>
+</head>
+<body class="loading">
+    
+    <div class="progress-bar"></div>
+    <div class="preloader"><div class="counter">0%</div></div>
+    
+    <div class="bg-grid"></div>
+    
+    <div class="marquee-container">
+        <div class="marquee-content">
+            <span class="marquee-text">CREATIVE • MOTION • DESIGN • 3D • EDITING • VISUALS • </span>
+            <span class="marquee-text">CREATIVE • MOTION • DESIGN • 3D • EDITING • VISUALS • </span>
+        </div>
+    </div>
+
+    <div class="interactive-bg"></div>
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">PrathamNarula.</div>
+            <nav>
+                <a href="#home" class="magnetic">Home</a>
+                <a href="#projects" class="magnetic">Projects</a>
+                <a href="#contact" class="magnetic">Contact</a>
+            </nav>
+        </header>
+
+        <section class="hero" id="home">
+            <p class="hero-subtitle reveal-text">Hello! I Am</p>
+            <h1 class="hero-title reveal-text">Pratham Narula<br><span class="typing-text" id="typing">Designer</span></h1>
+            <p class="hero-description reveal-text">Creating meaningful digital experiences through design and code.</p>
+        </section>
+    </div>
+
+    <h2 class="section-title reveal-text">MY WORKS</h2>
+
+    <div id="projects" class="horizontal-section">
+        <div class="reels-track">
+            
+            <div class="reel-card">
+                <div class="phone-container aspect-square">
+                    <div class="glow-layer">
+                        <img class="glow-image active" src="https://res.cloudinary.com/dotunt8rp/video/upload/f_auto,q_auto/vc_h264/Mograph_First_Try_Small_size_Lossless_rumjif.jpg">
+                    </div>
+                    <div class="video-wrapper">
+                        <video class="video-player" loop muted playsinline preload="auto" poster="https://res.cloudinary.com/dotunt8rp/video/upload/vc_h264/Mograph_First_Try_Small_size_Lossless_rumjif.jpg">
+                            <source src="https://res.cloudinary.com/dotunt8rp/video/upload/vc_h264/Mograph_First_Try_Small_size_Lossless_rumjif.mp4" type="video/mp4">
+                        </video>
+                        <button class="sound-btn" onclick="toggleSound(event, this)" aria-label="Toggle Sound">
+                            <svg class="icon-off" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73 4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+                            <svg class="icon-on" viewBox="0 0 24 24" style="display:none;"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <h3 class="card-title">Mograph One</h3>
+            </div>
+
+            <div class="reel-card">
+                <div class="phone-container">
+                    <div class="glow-layer">
+                        <img class="glow-image active" src="https://res.cloudinary.com/dotunt8rp/image/upload/f_auto,q_auto/v1769059767/karan_aujla_jhycjn.jpg">
+                    </div>
+                    <div class="video-wrapper">
+                        <img class="photo-player" src="https://res.cloudinary.com/dotunt8rp/image/upload/f_auto,q_auto/v1769059767/karan_aujla_jhycjn.jpg">
+                    </div>
+                </div>
+                <h3 class="card-title">Karan Aujla</h3>
+            </div>
+
+            <div class="reel-card">
+                <div class="phone-container aspect-square">
+                    <div class="glow-layer">
+                        <img class="glow-image active" src="https://res.cloudinary.com/dotunt8rp/video/upload/f_auto,q_auto/Without_Me_1_bvag7p.jpg">
+                    </div>
+                    <div class="video-wrapper">
+                        <video class="video-player" loop muted playsinline preload="auto" poster="https://res.cloudinary.com/dotunt8rp/video/upload/f_auto,q_auto/Without_Me_1_bvag7p.jpg">
+                            <source src="https://res.cloudinary.com/dotunt8rp/video/upload/Without_Me_1_bvag7p.mp4" type="video/mp4">
+                        </video>
+                        <button class="sound-btn" onclick="toggleSound(event, this)" aria-label="Toggle Sound">
+                            <svg class="icon-off" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73 4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+                            <svg class="icon-on" viewBox="0 0 24 24" style="display:none;"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <h3 class="card-title">Without Me Edit</h3>
+            </div>
+
+            <div class="reel-card">
+                <div class="phone-container aspect-square">
+                    <div class="glow-layer">
+                        <img class="glow-image active" src="https://res.cloudinary.com/dotunt8rp/image/upload/f_auto,q_auto/v1769059767/pink_plastic_kiss_album_cover_sznqfx.jpg">
+                    </div>
+                    <div class="video-wrapper">
+                        <img class="photo-player" src="https://res.cloudinary.com/dotunt8rp/image/upload/f_auto,q_auto/v1769059767/pink_plastic_kiss_album_cover_sznqfx.jpg">
+                    </div>
+                </div>
+                <h3 class="card-title">Pink Plastic Kiss</h3>
+            </div>
+
+            <div class="reel-card">
+                <div class="phone-container">
+                    <div class="glow-layer">
+                        <img class="glow-image active" src="https://res.cloudinary.com/dotunt8rp/image/upload/f_auto,q_auto/v1769059765/Artboard_1_pqy3bs.jpg">
+                    </div>
+                    <div class="video-wrapper">
+                        <img class="photo-player" src="https://res.cloudinary.com/dotunt8rp/image/upload/f_auto,q_auto/v1769059765/Artboard_1_pqy3bs.jpg">
+                    </div>
+                </div>
+                <h3 class="card-title">Graphic Design</h3>
+            </div>
+
+            <div class="reel-card">
+                <div class="phone-container">
+                    <div class="glow-layer">
+                        <img class="glow-image active" src="https://res.cloudinary.com/dotunt8rp/image/upload/f_auto,q_auto/v1769062373/e40efbef-8f5e-46a5-a746-b126bb2c6495_rw_1920_mckvqx.jpg">
+                        <img class="glow-image" src="https://res.cloudinary.com/dotunt8rp/image/upload/f_auto,q_auto/v1769062373/ae4e308d-0a3c-4e30-9be9-ffd583ae3700_rw_1920_vv5pez.jpg">
+                        <img class="glow-image" src="https://res.cloudinary.com/dotunt8rp/image/upload/f_auto,q_auto/v1769062372/94c44a35-e965-428f-b501-9e463f8a2d0f_rw_1920_qpjqaw.jpg">
+                        <img class="glow-image" src="https://res.cloudinary.com/dotunt8rp/image/upload/f_auto,q_auto/v1769062371/8d79aa3e-5b05-4851-a938-3d7439948cbe_rw_1920_uxb9z7.jpg">
+                    </div>
+                    <div class="video-wrapper">
+                        <img class="photo-player slide active" src="https://res.cloudinary.com/dotunt8rp/image/upload/f_auto,q_auto/v1769062373/e40efbef-8f5e-46a5-a746-b126bb2c6495_rw_1920_mckvqx.jpg">
+                        <img class="photo-player slide" src="https://res.cloudinary.com/dotunt8rp/image/upload/f_auto,q_auto/v1769062373/ae4e308d-0a3c-4e30-9be9-ffd583ae3700_rw_1920_vv5pez.jpg">
+                        <img class="photo-player slide" src="https://res.cloudinary.com/dotunt8rp/image/upload/f_auto,q_auto/v1769062372/94c44a35-e965-428f-b501-9e463f8a2d0f_rw_1920_qpjqaw.jpg">
+                        <img class="photo-player slide" src="https://res.cloudinary.com/dotunt8rp/image/upload/f_auto,q_auto/v1769062371/8d79aa3e-5b05-4851-a938-3d7439948cbe_rw_1920_uxb9z7.jpg">
+                    </div>
+                </div>
+                <h3 class="card-title">UI/UX Design</h3>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="container">
+        <section id="contact" class="footer-cta">
+            <h2 class="cta-text magnetic">LET'S WORK TOGETHER</h2>
+            
+            <div class="footer-socials">
+                <a href="#">Instagram</a>
+                <a href="#">LinkedIn</a>
+                <a href="#">Behance</a>
+                <a href="#">Email</a>
+            </div>
+
+            <div class="footer-credits"><p>© 2025 Pratham Narula. All Rights Reserved.</p></div>
+        </section>
+    </div>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- 1. STRICT LOADER ---
+        const assets = [ ...document.querySelectorAll('img'), ...document.querySelectorAll('video') ];
+        let loadedCount = 0; const total = assets.length;
+
+        function checkProgress() {
+            loadedCount++;
+            let progress = Math.round((loadedCount / total) * 100);
+            gsap.to(".counter", { innerHTML: progress + "%", snap: { innerHTML: 1 }, duration: 0.2 });
+            if (loadedCount >= total) revealSite();
+        }
+        
+        setTimeout(() => { if(loadedCount < total) revealSite(); }, 5000);
+        if (total === 0) revealSite();
+
+        assets.forEach(asset => {
+            if (asset.tagName === 'IMG') {
+                if(asset.complete) checkProgress();
+                else { asset.onload = checkProgress; asset.onerror = checkProgress; }
+            } else {
+                if(asset.readyState >= 3) checkProgress();
+                else { asset.onloadeddata = checkProgress; asset.onerror = checkProgress; }
+            }
+        });
+
+        function revealSite() {
+            document.body.classList.add('loaded');
+            document.body.classList.remove('loading');
+            const tl = gsap.timeline();
+            tl.to(".counter", { opacity: 0, duration: 0.5 })
+              .to(".preloader", { yPercent: -100, duration: 1, ease: "expo.inOut" })
+              .to(".reveal-text", { y: 0, opacity: 1, stagger: 0.1, duration: 1, ease: "power4.out" }, "-=0.5")
+              .add(() => initHorizontalScroll());
+        }
+
+        // --- 2. HORIZONTAL SCROLL ---
+        function initHorizontalScroll() {
+            const track = document.querySelector(".reels-track");
+            let scrollDistance = track.scrollWidth - window.innerWidth + window.innerWidth * 0.2;
+
+            gsap.to(track, {
+                x: -scrollDistance, ease: "none",
+                scrollTrigger: {
+                    trigger: ".horizontal-section",
+                    pin: true,
+                    scrub: 1,
+                    end: () => "+=" + scrollDistance
+                }
+            });
+        }
+
+        // --- 3. SMOOTH SCROLL ---
+        const lenis = new Lenis();
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+        gsap.ticker.lagSmoothing(0);
+        gsap.to(".progress-bar", { width: "100%", ease: "none", scrollTrigger: { scrub: 0.3 } });
+
+        // --- 4. SOUND TOGGLE ---
+        window.toggleSound = function(e, btn) {
+            e.stopPropagation(); 
+            const video = btn.closest('.video-wrapper').querySelector('video');
+            if(video) {
+                video.muted = !video.muted;
+                const iconOff = btn.querySelector('.icon-off');
+                const iconOn = btn.querySelector('.icon-on');
+                iconOff.style.display = video.muted ? 'block' : 'none';
+                iconOn.style.display = video.muted ? 'none' : 'block';
+            }
+        };
+
+        // --- 5. INTERACTIVE BG ---
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+        const bg = document.querySelector('.interactive-bg');
+        let mX = window.innerWidth/2, mY = window.innerHeight/2;
+        let bgX = mX, bgY = mY;
+
+        window.addEventListener('mousemove', (e) => {
+            mX = e.clientX; mY = e.clientY;
+            cursorDot.style.left = `${mX}px`; cursorDot.style.top = `${mY}px`;
+            cursorOutline.style.left = `${mX}px`; cursorOutline.style.top = `${mY}px`;
+        });
+
+        function animateBg() {
+            bgX += (mX - bgX) * 0.05; bgY += (mY - bgY) * 0.05;
+            bg.style.transform = `translate(${bgX}px, ${bgY}px) translate(-50%, -50%)`;
+            requestAnimationFrame(animateBg);
+        }
+        animateBg();
+
+        // --- 6. CARD INTERACTIONS ---
+        document.querySelectorAll('.reel-card').forEach(card => {
+            const container = card.querySelector('.phone-container');
+            const mediaList = card.querySelectorAll('.video-player, .photo-player');
+            const glowImages = card.querySelectorAll('.glow-image');
+            const video = card.querySelector('video');
+            const slides = card.querySelectorAll('.slide');
+            let slideInt;
+
+            // 3D Tilt
+            card.addEventListener("mousemove", e => {
+                const rect = card.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                gsap.to(container, { rotationY: x * 15, rotationX: -y * 15, scale: 1.02, duration: 0.5 });
+            });
+
+            card.addEventListener("mouseenter", () => {
+                if(video) video.play();
+                if(slides.length > 1) {
+                    let cur = 0;
+                    slideInt = setInterval(() => {
+                        slides.forEach(s => s.classList.remove('active'));
+                        cur = (cur + 1) % slides.length;
+                        slides[cur].classList.add('active');
+                        // Sync Glow
+                        if(glowImages.length > 1) {
+                            glowImages.forEach(g => g.classList.remove('active'));
+                            glowImages[cur].classList.add('active');
+                        }
+                    }, 1500);
+                }
+            });
+
+            card.addEventListener("mouseleave", () => {
+                if(video) video.pause();
+                if(slideInt) {
+                    clearInterval(slideInt);
+                    slides.forEach(s => s.classList.remove('active'));
+                    slides[0].classList.add('active'); 
+                    if(glowImages.length > 1) {
+                        glowImages.forEach(g => g.classList.remove('active'));
+                        glowImages[0].classList.add('active');
+                    }
+                }
+                gsap.to(container, { rotationY: 0, rotationX: 0, scale: 1, duration: 0.5 });
+            });
+        });
+
+        // Magnetic & Typing
+        document.querySelectorAll('.magnetic').forEach(el => {
+            el.addEventListener("mousemove", e => {
+                const rect = el.getBoundingClientRect();
+                gsap.to(el, { x: e.clientX - (rect.left + rect.width/2), y: e.clientY - (rect.top + rect.height/2), duration: 0.3 });
+            });
+            el.addEventListener("mouseleave", () => gsap.to(el, { x: 0, y: 0, duration: 0.3 }));
+        });
+
+        const words = ["Designer", "Motion Artist", "3D Creator"];
+        let i = 0, j = 0, cur = "", del = false;
+        (function type() {
+            cur = words[i];
+            document.getElementById("typing").textContent = del ? cur.substring(0, j--) : cur.substring(0, j++);
+            if (!del && j > cur.length) { del = true; setTimeout(type, 1500); }
+            else if (del && j < 0) { del = false; i = (i + 1) % words.length; j = 0; setTimeout(type, 500); }
+            else setTimeout(type, del ? 50 : 100);
+        })();
+    </script>
+</body>
+</html>
