@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pratham Narula - Portfolio</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,14 +17,10 @@
     <style>
         /* --- RESET --- */
         * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
-        
-        html, body {
-            width: 100%;
-            max-width: 100%;
-            overflow-x: hidden; /* CRITICAL FOR MOBILE */
-            background: #050505; 
-            color: #fff; 
-            font-family: 'Poppins', sans-serif; 
+        body { 
+            background: #050505; color: #fff; font-family: 'Poppins', sans-serif; 
+            height: 950vh; 
+            overflow-x: hidden;
             opacity: 0; transition: opacity 0.5s;
         }
         body.loaded { opacity: 1; }
@@ -44,7 +40,7 @@
             mix-blend-mode: difference;
         }
 
-        /* --- SCROLL INDICATOR --- */
+        /* --- SCROLL TEXT --- */
         .scroll-indicator {
             position: fixed; bottom: 3rem; left: 50%; transform: translateX(-50%);
             font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px;
@@ -169,136 +165,42 @@
         .slide.active { opacity: 1; }
 
         /* ========================================= */
-        /* DESKTOP STYLES (Min Width 800px)          */
-        /* ========================================= */
-        @media (min-width: 800px) {
-            body { height: 950vh; } 
-            
-            .hero-text { font-size: 15vw; }
-
-            .reels-track { 
-                gap: 8vw; 
-                padding-left: 5vw; 
-                height: 100%; 
-            }
-
-            .reel-card {
-                height: 55vh; 
-                width: auto;
-                display: flex;
-            }
-            .card-inner img, .card-inner video { height: 100%; width: auto; object-fit: contain; }
-            .reel-card.aspect-landscape { aspect-ratio: 16/9 !important; width: 88vh !important; }
-            .reel-card.aspect-auto { aspect-ratio: auto !important; width: auto !important; }
-            .reel-card.aspect-auto img { width: auto !important; height: 100%; }
-
-            /* Desktop Hover & Tilt */
-            .reel-card:hover .card-glow { opacity: 0.6; transform: scale(1.05); }
-            .reel-card:hover .shine-layer { opacity: 1; }
-            .reels-track:has(.reel-card:hover) .reel-card:not(:hover) { opacity: 0.2; filter: grayscale(100%); transform: scale(0.9); }
-            .reel-card:hover { opacity: 1; filter: grayscale(0%); transform: scale(1.1); z-index: 100; }
-            .reel-card:hover .card-title { opacity: 1; transform: translateX(-50%) translateY(0); }
-            .reel-card:hover .sound-icon { opacity: 1; }
-        }
-
-        /* ========================================= */
-        /* MOBILE STYLES (Max Width 799px)           */
+        /* MOBILE OVERRIDES (NO TILT, VERTICAL)      */
         /* ========================================= */
         @media (max-width: 799px) {
-            /* Force natural scroll height */
-            body { 
-                height: auto !important; 
-                overflow-y: auto !important; 
-                overflow-x: hidden !important; 
-                cursor: auto; 
-            }
+            body { height: auto; overflow-y: auto; cursor: auto; }
             * { cursor: auto !important; }
-            
-            /* Remove PC Cursor */
             .cursor-dot, .cursor-outline { display: none !important; }
 
-            /* Hero adjustments */
             .hero-text { font-size: 20vw; }
-            .scroll-indicator { bottom: 15vh; }
+            .scroll-indicator { bottom: 10vh; }
 
-            /* Make Gallery Static Vertical List */
             .gallery-layer { 
-                position: relative; 
-                top: 0; left: 0;
-                height: auto; 
-                opacity: 1; 
-                padding-top: 100vh; /* Push below Hero */
-                padding-bottom: 20vh;
-                pointer-events: auto;
-                width: 100%;
-                display: block;
+                position: relative; height: auto; opacity: 1; 
+                padding-top: 15vh; padding-bottom: 20vh; pointer-events: auto;
             }
-
-            .works-title { 
-                position: relative; 
-                top: auto; 
-                margin-bottom: 5vh; 
-                font-size: 15vw; 
-                opacity: 1;
-                width: 100%;
-            }
+            .works-title { position: relative; top: auto; margin-bottom: 5vh; font-size: 15vw; opacity: 1; }
 
             .reels-track {
-                display: flex;
-                flex-direction: column; /* Vertical Stack */
-                width: 100%;
-                height: auto;
-                padding: 0 5vw;
-                gap: 8vh;
-                transform: none !important; /* Disable Horizontal Scroll */
+                flex-direction: column; width: 100%; height: auto;
+                padding: 0 5vw; gap: 10vh; transform: none !important;
             }
 
-            .ghost-card { display: none !important; }
+            .ghost-card { display: none; }
 
-            /* Card Sizing Mobile */
             .reel-card {
-                width: 100% !important;
-                height: auto !important;
-                aspect-ratio: auto !important;
-                transform: none !important;
-                opacity: 1 !important;
-                filter: none !important;
-                margin-bottom: 2rem;
+                width: 100% !important; height: auto !important; aspect-ratio: auto;
+                transform: none !important; opacity: 1 !important; filter: none !important;
             }
+            .card-inner { width: 100%; border-radius: 8px; transform: none !important; } /* Stop Tilt */
+            .card-inner img, .card-inner video { width: 100%; height: auto; object-fit: cover; }
 
-            .card-inner {
-                width: 100%;
-                border-radius: 8px;
-            }
-
-            .card-inner img, .card-inner video {
-                width: 100%;
-                height: auto;
-                object-fit: cover;
-            }
-
-            /* Titles & Icons always visible */
-            .card-title {
-                position: relative;
-                bottom: auto;
-                margin-top: 1rem;
-                opacity: 1;
-                transform: translateX(-50%);
-                font-size: 1.2rem;
-            }
+            .card-title { position: relative; bottom: auto; margin-top: 1rem; opacity: 1; transform: translateX(-50%); font-size: 1.2rem; }
             .card-glow { opacity: 0.4; filter: blur(20px); transform: scale(1.05); }
             .sound-icon { opacity: 1; width: 40px; height: 40px; }
 
-            /* Footer Mobile */
-            .footer-end {
-                position: relative;
-                height: 60vh;
-                opacity: 1;
-                visibility: visible;
-                background: transparent;
-                top: auto; left: auto;
-            }
-            .footer-end h2 { font-size: 12vw; }
+            .footer-end { position: relative; height: 50vh; opacity: 1; visibility: visible; background: transparent; }
+            .footer-end h2 { font-size: 10vw; }
         }
 
     </style>
@@ -336,7 +238,7 @@
                 <video id="glow-video-1" class="card-glow" loop muted playsinline src="https://res.cloudinary.com/dotunt8rp/video/upload/v1769046710/Mograph_First_Try_Small_size_Lossless_rumjif.mp4"></video>
                 <div class="card-inner">
                     <div class="shine-layer"></div>
-                    <video id="main-video-1" loop muted playsinline autoplay src="https://res.cloudinary.com/dotunt8rp/video/upload/v1769046710/Mograph_First_Try_Small_size_Lossless_rumjif.mp4"></video>
+                    <video id="main-video-1" loop muted playsinline autoplay src="https://res.cloudinary.com/dotunt8rp/video/upload/f_auto,q_auto/vc_h264/Mograph_First_Try_Small_size_Lossless_rumjif.mp4"></video>
                     <div class="sound-icon">
                         <svg class="icon-mute" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73 4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
                     </div>
@@ -441,7 +343,6 @@
     </div>
 
     <script>
-        // Scroll reset
         if (history.scrollRestoration) { history.scrollRestoration = 'manual'; }
         window.onbeforeunload = function () { window.scrollTo(0, 0); }
 
@@ -471,8 +372,8 @@
             // GSAP Responsive Logic
             let mm = gsap.matchMedia();
 
-            // DESKTOP ANIMATION (>800px)
             mm.add("(min-width: 800px)", () => {
+                // DESKTOP ANIMATION
                 const tl = gsap.timeline({ scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 1 } });
                 
                 tl.to(".hero-text", { scale: 20, opacity: 0, ease: "power2.in", duration: 2 })
@@ -482,7 +383,7 @@
                   .to(".gallery-layer", { opacity: 1, duration: 1 }, "-=0.5")
                   .to(".works-title", { opacity: 1, duration: 1 }, "-=0.5")
                   
-                  // SHORT HOLD (0.2s)
+                  // 0.2s HOLD TIME (Snappy)
                   .to({}, { duration: 0.2 }) 
                   
                   .to(".reels-track", { 
@@ -494,15 +395,14 @@
                   .to(".footer-end", { opacity: 1, visibility: 'visible', pointerEvents: 'all', duration: 1 });
             });
 
-            // MOBILE ANIMATION (<800px)
             mm.add("(max-width: 799px)", () => {
+                // MOBILE ANIMATION (Simple Fade Out Hero)
                 const tl = gsap.timeline({ scrollTrigger: { trigger: "body", start: "top top", end: "100vh top", scrub: 1 } });
                 tl.to(".hero-layer", { opacity: 0, pointerEvents: "none" });
             });
         };
 
         window.addEventListener('mousemove', (e) => {
-            if(window.innerWidth < 800) return;
             gsap.to('.cursor-dot', { x: e.clientX, y: e.clientY, duration: 0 });
             gsap.to('.cursor-outline', { x: e.clientX, y: e.clientY, duration: 0.15 });
         });
@@ -526,7 +426,7 @@
             const icon = card.querySelector('.sound-icon');
             
             card.addEventListener('mousemove', (e) => {
-                if(window.innerWidth < 800) return;
+                if(window.innerWidth < 800) return; // KILL TILT ON MOBILE
                 const rect = card.getBoundingClientRect();
                 const x = (e.clientX - rect.left) / rect.width - 0.5;
                 const y = (e.clientY - rect.top) / rect.height - 0.5;
@@ -542,7 +442,9 @@
             card.addEventListener('mouseleave', () => { 
                 document.body.classList.remove('hovering'); 
                 if(mainVid) mainVid.pause(); 
-                if(window.innerWidth >= 800) gsap.to(inner, { rotationY: 0, rotationX: 0 });
+                if(window.innerWidth >= 800) { // Reset tilt only on desktop
+                    gsap.to(inner, { rotationY: 0, rotationX: 0 }); 
+                }
             });
             
             card.addEventListener('click', () => { 
