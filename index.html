@@ -164,6 +164,45 @@
         .slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.5s; object-fit: cover; }
         .slide.active { opacity: 1; }
 
+        /* ========================================= */
+        /* MOBILE OVERRIDES (NO TILT, VERTICAL)      */
+        /* ========================================= */
+        @media (max-width: 799px) {
+            body { height: auto; overflow-y: auto; cursor: auto; }
+            * { cursor: auto !important; }
+            .cursor-dot, .cursor-outline { display: none !important; }
+
+            .hero-text { font-size: 20vw; }
+            .scroll-indicator { bottom: 10vh; }
+
+            .gallery-layer { 
+                position: relative; height: auto; opacity: 1; 
+                padding-top: 15vh; padding-bottom: 20vh; pointer-events: auto;
+            }
+            .works-title { position: relative; top: auto; margin-bottom: 5vh; font-size: 15vw; opacity: 1; }
+
+            .reels-track {
+                flex-direction: column; width: 100%; height: auto;
+                padding: 0 5vw; gap: 10vh; transform: none !important;
+            }
+
+            .ghost-card { display: none; }
+
+            .reel-card {
+                width: 100% !important; height: auto !important; aspect-ratio: auto;
+                transform: none !important; opacity: 1 !important; filter: none !important;
+            }
+            .card-inner { width: 100%; border-radius: 8px; transform: none !important; } /* Stop Tilt */
+            .card-inner img, .card-inner video { width: 100%; height: auto; object-fit: cover; }
+
+            .card-title { position: relative; bottom: auto; margin-top: 1rem; opacity: 1; transform: translateX(-50%); font-size: 1.2rem; }
+            .card-glow { opacity: 0.4; filter: blur(20px); transform: scale(1.05); }
+            .sound-icon { opacity: 1; width: 40px; height: 40px; }
+
+            .footer-end { position: relative; height: 50vh; opacity: 1; visibility: visible; background: transparent; }
+            .footer-end h2 { font-size: 10vw; }
+        }
+
     </style>
 </head>
 <body>
@@ -199,9 +238,9 @@
                 <video id="glow-video-1" class="card-glow" loop muted playsinline src="https://res.cloudinary.com/dotunt8rp/video/upload/f_auto,q_auto/vc_h264/Mograph_First_Try_Small_size_Lossless_rumjif.mp4"></video>
                 <div class="card-inner">
                     <div class="shine-layer"></div>
-                    <video id="main-video-1" loop muted playsinline autoplay src="https://res.cloudinary.com/dotunt8rp/video/upload/v1769046710/Mograph_First_Try_Small_size_Lossless_rumjif.mp4"></video>
-<div class="sound-icon">
-<svg class="icon-mute" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73 4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+                    <video id="main-video-1" loop muted playsinline autoplay src="https://res.cloudinary.com/dotunt8rp/video/upload/f_auto,q_auto/vc_h264/Mograph_First_Try_Small_size_Lossless_rumjif.mp4"></video>
+                    <div class="sound-icon">
+                        <svg class="icon-mute" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73 4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
                     </div>
                 </div>
                 <div class="card-title">Rakhlo Tum Chupake Mograph</div>
@@ -325,30 +364,42 @@
                 if(glowV) { glowV.muted = true; glowV.play().catch(() => {}); }
             };
             
-            forcePlay(); // Immediate attempt
+            forcePlay(); 
             window.addEventListener('click', forcePlay, { once: true });
             window.addEventListener('touchstart', forcePlay, { once: true });
             window.addEventListener('scroll', forcePlay, { once: true });
 
-            const tl = gsap.timeline({ scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 1 } });
-            
-            tl.to(".hero-text", { scale: 20, opacity: 0, ease: "power2.in", duration: 2 })
-              .add(() => document.querySelector('.scroll-indicator').classList.add('sike'), 0.5)
-              .to(".scroll-indicator", { opacity: 0, duration: 0.5 }, 1.5)
-              .to(".hero-layer", { opacity: 0, pointerEvents: "none", duration: 0.1 }, "-=0.5") 
-              .to(".gallery-layer", { opacity: 1, duration: 1 }, "-=0.5")
-              .to(".works-title", { opacity: 1, duration: 1 }, "-=0.5")
-              
-              // HALVED HOLD TIME (0.2s is enough to register, super snappy)
-              .to({}, { duration: 0.2 }) 
-              
-              .to(".reels-track", { 
-                  x: () => -(document.querySelector('.reels-track').scrollWidth - window.innerWidth), 
-                  ease: "none", 
-                  duration: 12 
-              })
-              .to([".gallery-layer", ".works-title"], { opacity: 0, duration: 1 })
-              .to(".footer-end", { opacity: 1, visibility: 'visible', pointerEvents: 'all', duration: 1 });
+            // GSAP Responsive Logic
+            let mm = gsap.matchMedia();
+
+            mm.add("(min-width: 800px)", () => {
+                // DESKTOP ANIMATION
+                const tl = gsap.timeline({ scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 1 } });
+                
+                tl.to(".hero-text", { scale: 20, opacity: 0, ease: "power2.in", duration: 2 })
+                  .add(() => document.querySelector('.scroll-indicator').classList.add('sike'), 0.5)
+                  .to(".scroll-indicator", { opacity: 0, duration: 0.5 }, 1.5)
+                  .to(".hero-layer", { opacity: 0, pointerEvents: "none", duration: 0.1 }, "-=0.5") 
+                  .to(".gallery-layer", { opacity: 1, duration: 1 }, "-=0.5")
+                  .to(".works-title", { opacity: 1, duration: 1 }, "-=0.5")
+                  
+                  // 0.2s HOLD TIME (Snappy)
+                  .to({}, { duration: 0.2 }) 
+                  
+                  .to(".reels-track", { 
+                      x: () => -(document.querySelector('.reels-track').scrollWidth - window.innerWidth), 
+                      ease: "none", 
+                      duration: 12 
+                  })
+                  .to([".gallery-layer", ".works-title"], { opacity: 0, duration: 1 })
+                  .to(".footer-end", { opacity: 1, visibility: 'visible', pointerEvents: 'all', duration: 1 });
+            });
+
+            mm.add("(max-width: 799px)", () => {
+                // MOBILE ANIMATION (Simple Fade Out Hero)
+                const tl = gsap.timeline({ scrollTrigger: { trigger: "body", start: "top top", end: "100vh top", scrub: 1 } });
+                tl.to(".hero-layer", { opacity: 0, pointerEvents: "none" });
+            });
         };
 
         window.addEventListener('mousemove', (e) => {
@@ -375,6 +426,7 @@
             const icon = card.querySelector('.sound-icon');
             
             card.addEventListener('mousemove', (e) => {
+                if(window.innerWidth < 800) return; // KILL TILT ON MOBILE
                 const rect = card.getBoundingClientRect();
                 const x = (e.clientX - rect.left) / rect.width - 0.5;
                 const y = (e.clientY - rect.top) / rect.height - 0.5;
@@ -390,7 +442,9 @@
             card.addEventListener('mouseleave', () => { 
                 document.body.classList.remove('hovering'); 
                 if(mainVid) mainVid.pause(); 
-                gsap.to(inner, { rotationY: 0, rotationX: 0 }); 
+                if(window.innerWidth >= 800) { // Reset tilt only on desktop
+                    gsap.to(inner, { rotationY: 0, rotationX: 0 }); 
+                }
             });
             
             card.addEventListener('click', () => { 
